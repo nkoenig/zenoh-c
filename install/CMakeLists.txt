@@ -84,3 +84,10 @@ endforeach()
 #
 install_zenohc_lib("Release;RelWithDebInfo;MinSizeRel;None" "RELEASE" zenohc)
 install_zenohc_lib("Debug" "DEBUG" zenohc_debug)
+
+#
+# Install zenohd
+#
+install(PROGRAMS ${ZENOH_EXTERNAL_PROJECT_DIR}/src/zenoh/target/release/zenohd DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES ${ZENOH_EXTERNAL_PROJECT_DIR}/src/zenoh/target/release/libzenoh_plugin_rest.so DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(FILES ${ZENOH_EXTERNAL_PROJECT_DIR}/src/zenoh/target/release/libzenoh_plugin_storage_manager.so DESTINATION ${CMAKE_INSTALL_LIBDIR})

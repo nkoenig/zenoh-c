@@ -48,6 +48,26 @@ endif()
 status_print(project_version)
 
 #
+# Include zenoh project using ExternalProject_Add. We are doing this to
+# download the zenoh source once, and then use it to build library
+# dependencies and the zenohd router via cargo. Look in the
+# Cargo.toml.in file to see where dependencies are specified.
+#
+include(ExternalProject)
+
+set(ZENOH_EXTERNAL_PROJECT_DIR ${CMAKE_BINARY_DIR}/_cargo_deps)
+ExternalProject_Add(
+    zenoh
+    PREFIX ${ZENOH_EXTERNAL_PROJECT_DIR}
+    GIT_REPOSITORY https://github.com/eclipse-zenoh/zenoh.git
+    GIT_TAG main
+    BUILD_COMMAND cargo build --package zenohd --package zenoh --package zenoh-util --package zenoh-ext --package zenoh-plugin-rest --package zenoh-plugin-storage-manager --release --features shared-memory,unstable
+    CONFIGURE_COMMAND "" # Disable the configure step
+    INSTALL_COMMAND ""
+    BUILD_IN_SOURCE 1
+)
+
+#
 # There are 3 possible variants of placement generated Cargo.toml files:
 # 1. Build in source tree (in IDE usually), using single config generator (Ninja, Makefiles)
 #    
@@ -208,6 +228,7 @@ add_custom_command(
 	DEPENDS "${rust_sources}"
 )
 add_custom_target(cargo ALL DEPENDS "${libs}")
+add_dependencies(cargo zenoh)
 
 #
 # Define libraries built by cargo as targets
